@@ -1,0 +1,43 @@
+system:
+  name: "MeteoGuard"
+  version: "1.0.0-prototype"
+  environment: "demo"
+  data_source: "NOAA ISD — Prototype Data Source"
+  disclaimer: "NOAA ISD is used as a proxy dataset for this prototype. Production deployment requires integration with official IMD AWS feeds."
+
+network:
+  total_stations: 675
+  regions:
+    - Northern Plains
+    - Western Coastal
+    - Southern Peninsular
+    - Eastern Coastal
+    - Himalayan Region
+    - Central Plateau
+    - Thar Desert
+
+physics_rules:
+  temperature:
+    max_rate_of_change_per_hour: 5.0 # °C/hour
+    min_physical_bound: -10.0 # °C
+    max_physical_bound: 55.0 # °C
+  pressure:
+    max_rate_of_change_per_hour: 3.0 # hPa/hour
+    min_physical_bound: 870.0 # hPa
+    max_physical_bound: 1080.0 # hPa
+  humidity:
+    max_rate_of_change_per_hour: 15.0 # %/hour
+    min_physical_bound: 0.0 # %
+    max_physical_bound: 100.0 # %
+
+ai_model:
+  architecture: "Per-station Autoencoder (72 -> 16 -> 72)"
+  input_window_hours: 72
+  latent_dimensions: 16
+  reconstruction_error_metric: "MSE"
+  adaptive_threshold_multiplier: 1.5
+
+spatial_corroboration:
+  k_nearest_neighbours: 5
+  max_distance_km: 150.0
+  min_correlation_threshold: 0.75

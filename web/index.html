@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MeteoGuard — AWS Sensor Anomaly Detection & Predictive Maintenance Control Room</title>
+  <meta name="description" content="Automatic Weather Station (AWS) sensor anomaly detection, explainable AI diagnostics, spatial corroboration, and predictive maintenance control room system.">
+  <meta name="keywords" content="AWS, Weather Station, Anomaly Detection, Autoencoder, Predictive Maintenance, IMD, NOAA ISD, Sensor Quality Control">
+  
+  <!-- Structured Data (JSON-LD) for SEO & Web Standards -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "MeteoGuard",
+    "operatingSystem": "Web Dashboard",
+    "applicationCategory": "ControlRoomApplication",
+    "description": "AWS Sensor Anomaly Detection and Predictive Maintenance Control-Room System"
+  }
+  </script>
+
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- ==========================================================================
+         SIDEBAR NAVIGATION
+         ========================================================================== -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon">M</div>
+        <div class="brand-info">
+          <h1>MeteoGuard</h1>
+          <span>AWS Sensor Intelligence</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">CONTROL ROOM</div>
+        
+        <a href="#" class="nav-item active" data-view="view-overview">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+          <span>Overview</span>
+        </a>
+
+        <a href="#" class="nav-item" data-view="view-live">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+          <span>Live AWS</span>
+        </a>
+
+        <a href="#" class="nav-item" data-view="view-anomalies">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          <span>Anomalies</span>
+          <span class="nav-badge" id="sidebarNavBadge">9</span>
+        </a>
+
+        <a href="#" class="nav-item" data-view="view-map">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>
+          <span>Station Map</span>
+        </a>
+
+        <a href="#" class="nav-item" data-view="view-stations">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+          <span>Stations</span>
+        </a>
+
+        <a href="#" class="nav-item" data-view="view-sensors">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          <span>Sensors Explorer</span>
+        </a>
+
+        <a href="#" class="nav-item" data-view="view-analytics">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          <span>Analytics</span>
+        </a>
+
+        <a href="#" class="nav-item" data-view="view-health">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+          <span>Station Health</span>
+        </a>
+
+        <a href="#" class="nav-item" data-view="view-actions">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+          <span>Technician Actions</span>
+        </a>
+
+        <div class="nav-section-title">SECONDARY</div>
+
+        <a href="#" class="nav-item" data-view="view-settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          <span>Settings</span>
+        </a>
+
+        <a href="#" class="nav-item" data-view="view-model">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+          <span>Model Information</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="dataset-badge">NOAA ISD — Prototype Data Source</div>
+        <div>Control Room OS v1.0</div>
+        <div style="font-size: 9px; color: var(--text-muted); margin-top: 2px;">Official IMD feed proxy deployment</div>
+      </div>
+    </aside>
+
+    <!-- ==========================================================================
+         MAIN CONTENT AREA & TOP HEADER
+         ========================================================================== -->
+    <div class="main-wrapper">
+      <header class="top-header">
+        <div class="header-left">
+          <div class="status-pill">
+            <span class="status-dot"></span>
+            <span>SYSTEM ONLINE</span>
+          </div>
+          
+          <div class="header-stats">
+            <div class="stat-item">Last sync: <strong id="lastSyncText">21:45:00</strong></div>
+            <div class="stat-item">Clock: <strong id="liveClock" class="mono">--:--:--</strong></div>
+            <div class="stat-item">Network: <strong id="headerTotalStations">12</strong> Stations</div>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <button class="btn-control" id="refreshBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            <span>Refresh Data</span>
+          </button>
+          
+          <button class="btn-control btn-icon" onclick="document.querySelector('[data-view=view-anomalies]').click()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+            <span class="icon-badge"></span>
+          </button>
+        </div>
+      </header>
+
+      <div class="content-viewport">
+        <!-- Error Banner Container (shown if sensors.json fails to load) -->
+        <div id="dataErrorContainer" style="display:none;" class="error-banner">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          <div>
+            <strong>Sensor data unavailable</strong><br/>
+            <span>Unable to load demo sensor dataset. Check data/sensors.json.</span>
+          </div>
+        </div>
+
+        <!-- Banner Notice -->
+        <div class="proto-disclaimer">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          <span><strong>PROTOTYPE DATA ARCHITECTURE:</strong> Operating on <strong>NOAA ISD — Prototype Data Source (12-Sensor Network)</strong>. Backend APIs mirror operational IMD AWS standards.</span>
+        </div>
+
+        <!-- ==========================================================================
+             SIMULATION & DEMO SCENARIO CONTROL BAR
+             ========================================================================== -->
+        <div style="background: var(--bg-panel); border: 1px solid var(--accent-yellow-border); border-radius: 8px; padding: 14px 20px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+          <div>
+            <div style="font-size: 11px; font-weight: 800; color: var(--accent-yellow); text-transform: uppercase; letter-spacing: 0.08em;">DEMO / SYNTHETIC FAULT INJECTION CONTROLS</div>
+            <div style="font-size: 12px; color: var(--text-secondary);">Test MeteoGuard spatial corroboration & explainability engine</div>
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="btn-action-sm btn-dispatch" id="scenarioBtnA">Scenario A: Isolated Fault (MG-011)</button>
+            <button class="btn-action-sm" id="scenarioBtnB" style="background: var(--color-weather); color: #fff; border: none;">Scenario B: Regional Event (MG-010)</button>
+            <button class="btn-action-sm" id="resetSimBtn">RESET SIMULATION</button>
+          </div>
+        </div>
+
+        <!-- ==========================================================================
+             VIEW 1: OVERVIEW / CONTROL ROOM
+             ========================================================================== -->
+        <div id="view-overview" class="view-panel active-view">
+          <div class="section-header">
+            <div class="section-title">
+              <h2>Control Room Overview</h2>
+              <div class="section-subtitle">Real-time AWS sensor anomaly detection & spatial corroboration stream</div>
+            </div>
+          </div>
+
+          <!-- KPI Cards -->
+          <div class="kpi-grid">
+            <div class="kpi-card kpi-active">
+              <div class="kpi-title"><span>TOTAL SENSORS</span> 🌐</div>
+              <div class="kpi-value" id="kpiActive">12</div>
+            </div>
+            <div class="kpi-card kpi-healthy">
+              <div class="kpi-title"><span>HEALTHY</span> 🟢</div>
+              <div class="kpi-value" id="kpiHealthy">3</div>
+            </div>
+            <div class="kpi-card kpi-suspicious">
+              <div class="kpi-title"><span>UNDER OBSERVATION</span> 🟡</div>
+              <div class="kpi-value" id="kpiSuspicious">4</div>
+            </div>
+            <div class="kpi-card kpi-faults">
+              <div class="kpi-title"><span>ANOMALIES / FAULTS</span> 🔴</div>
+              <div class="kpi-value" id="kpiFaults">5</div>
+            </div>
+            <div class="kpi-card kpi-network-health">
+              <div class="kpi-title"><span>NETWORK HEALTH</span> 💚</div>
+              <div class="kpi-value" id="kpiNetworkHealth">65.8%</div>
+            </div>
+            <div class="kpi-card kpi-alerts">
+              <div class="kpi-title"><span>ACTIVE ALERTS</span> ⚠️</div>
+              <div class="kpi-value" id="kpiAlerts">9</div>
+            </div>
+            <div class="kpi-card kpi-weather">
+              <div class="kpi-title"><span>WEATHER EVENTS</span> 🔵</div>
+              <div class="kpi-value" id="kpiWeather">1</div>
+            </div>
+          </div>
+
+          <!-- System Pipeline Story Visualization -->
+          <div class="pipeline-container">
+            <div class="pipeline-title">
+              <span>METEOGUARD AUTOMATED PROCESSING PIPELINE</span>
+              <span style="font-size: 10px; font-weight: normal; color: var(--text-muted);">END-TO-END REASONING ENGINE</span>
+            </div>
+            <div class="pipeline-steps">
+              <div class="pipeline-step"><div class="step-number">01</div><div class="step-label">RAW AWS SENSOR DATA</div></div>
+              <div class="pipeline-arrow">→</div>
+              <div class="pipeline-step"><div class="step-number">02</div><div class="step-label">DATA VALIDATION</div></div>
+              <div class="pipeline-arrow">→</div>
+              <div class="pipeline-step"><div class="step-number">03</div><div class="step-label">PHYSICS / QUALITY CHECKS</div></div>
+              <div class="pipeline-arrow">→</div>
+              <div class="pipeline-step"><div class="step-number">04</div><div class="step-label">AI ANOMALY MODEL</div></div>
+              <div class="pipeline-arrow">→</div>
+              <div class="pipeline-step active-step"><div class="step-number">05</div><div class="step-label">SUSPICIOUS GATE</div></div>
+              <div class="pipeline-arrow">→</div>
+              <div class="pipeline-step active-step"><div class="step-number">06</div><div class="step-label">NEIGHBOUR SPATIAL CORROBORATION</div></div>
+              <div class="pipeline-arrow">→</div>
+              <div class="pipeline-step"><div class="step-number">07</div><div class="step-label">FINAL CLASSIFICATION</div></div>
+              <div class="pipeline-arrow">→</div>
+              <div class="pipeline-step"><div class="step-number">08</div><div class="step-label">STATION HEALTH SCORING</div></div>
+              <div class="pipeline-arrow">→</div>
+              <div class="pipeline-step"><div class="step-number">09</div><div class="step-label">TECHNICIAN ACTION</div></div>
+            </div>
+          </div>
+
+          <!-- Priority Alerts -->
+          <div class="priority-alerts-container">
+            <div class="panel-header-bar">
+              <div class="panel-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-fault)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path></svg>
+                <span>Priority Alerts</span>
+              </div>
+              <span style="font-size: 11px; color: var(--text-secondary);">Requiring Operational Attention</span>
+            </div>
+            <div class="alerts-grid" id="priorityAlertsGrid">
+              <!-- Alerts populated dynamically by JS -->
+            </div>
+          </div>
+
+          <!-- Diagnostics & Spatial Corroboration ("WHY WAS THIS FLAGGED?") -->
+          <div class="diagnostics-grid">
+            <div class="explainability-card">
+              <div class="explainability-header">
+                <h3>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                  <span>WHY WAS THIS FLAGGED?</span>
+                </h3>
+                <div style="font-family: var(--font-mono); font-size: 13px;">
+                  Station: <strong id="explainStationTitle" style="color: var(--accent-yellow);">MG-006 (Bengaluru Central AWS)</strong>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 16px; margin-bottom: 16px;">
+                <div style="background: var(--bg-canvas); padding: 8px 14px; border-radius: 4px; font-size: 12px;">
+                  Classification: <strong id="explainClassification" style="color: var(--color-fault);">SENSOR FAULT</strong>
+                </div>
+                <div style="background: var(--bg-canvas); padding: 8px 14px; border-radius: 4px; font-size: 12px;">
+                  Confidence: <strong id="explainConfidence" style="color: var(--accent-yellow);">95%</strong>
+                </div>
+              </div>
+
+              <h4 style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 8px;">Checklist Evidence:</h4>
+              <ul class="evidence-list" id="explainEvidenceList">
+                <!-- Populated dynamically -->
+              </ul>
+
+              <div class="reasoning-box">
+                <strong>Plain-Language Explanation:</strong><br/>
+                <span id="explainReasoningText">Flatline pattern detected on MG-006. Temperature output frozen at 31.2°C across 18 consecutive intervals. 4/4 surrounding regional stations observe nominal diurnal oscillations, indicating an isolated hardware sensor failure.</span>
+              </div>
+            </div>
+
+            <!-- Spatial Corroboration -->
+            <div class="spatial-card">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 style="font-size: 15px;">Neighbour-Station Corroboration</h3>
+                <span class="spatial-stage-badge">Stage 2 Analysis</span>
+              </div>
+              <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">
+                Cross-checking suspicious station against regional AWS nodes within 150km radius.
+              </p>
+
+              <table class="neighbour-table">
+                <thead>
+                  <tr>
+                    <th>Nearby Station</th>
+                    <th>Distance</th>
+                    <th>Correlation</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="neighbourCorroborationTable">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+
+              <div style="margin-top: 16px; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 6px; padding: 10px; font-size: 11px; color: var(--text-primary);">
+                <strong>Decision Rule:</strong> If neighbouring correlation ≥ 0.75 across >50% stations → <strong>REGIONAL WEATHER EVENT</strong>. Otherwise → <strong>ISOLATED SENSOR FAULT</strong>.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==========================================================================
+             VIEW 2: LIVE AWS SENSOR MONITORING & CHARTS
+             ========================================================================== -->
+        <div id="view-live" class="view-panel">
+          <div class="section-header">
+            <div class="section-title">
+              <h2>Live AWS Sensor Monitoring</h2>
+              <div class="section-subtitle">Multivariate sensor telemetry streams (Temperature, Humidity, Pressure)</div>
+            </div>
+          </div>
+
+          <div class="monitoring-card">
+            <div class="chart-controls">
+              <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                <h3 style="font-size: 15px;" id="liveChartTitle">Sensor Telemetry Stream — MG-006</h3>
+                <select id="liveStationSelect" class="search-input" style="width: auto; padding: 4px 10px; font-size: 12px; background: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 4px;">
+                  <!-- Populated dynamically with 12 stations -->
+                </select>
+              </div>
+              <div class="time-btn-group">
+                <button class="time-btn" data-range="6H">6H</button>
+                <button class="time-btn active" data-range="24H">24H</button>
+                <button class="time-btn" data-range="72H">72H</button>
+                <button class="time-btn" data-range="7D">7D</button>
+              </div>
+            </div>
+            <div style="display:flex;gap:6px;padding:0 0 10px 0;flex-wrap:wrap;">
+              <button class="time-btn param-btn active" data-param="temperature" style="font-size:11px;padding:4px 10px;">🌡 Temp Trend</button>
+              <button class="time-btn param-btn" data-param="humidity" style="font-size:11px;padding:4px 10px;">💧 Humidity Trend</button>
+              <button class="time-btn param-btn" data-param="pressure" style="font-size:11px;padding:4px 10px;">📊 Pressure Trend</button>
+              <button class="time-btn param-btn" data-param="health" style="font-size:11px;padding:4px 10px;">❤️ Sensor Health (12 Stations)</button>
+              <button class="time-btn param-btn" data-param="anomaly" style="font-size:11px;padding:4px 10px;">⚡ Anomaly Score (12 Stations)</button>
+              <button class="time-btn param-btn" data-param="comparison" style="font-size:11px;padding:4px 10px;">📈 Station Comparison</button>
+            </div>
+            <div class="chart-container-box">
+              <canvas id="liveSensorChartCanvas"></canvas>
+            </div>
+          </div>
+
+          <div class="diagnostics-grid">
+            <div class="spatial-card">
+              <h3 style="font-size: 15px; margin-bottom: 12px;">AI Anomaly Detection Model</h3>
+              <div class="dataset-badge">Demo Model Output</div>
+              <p style="font-size: 12px; color: var(--text-secondary); margin: 8px 0 16px;">
+                Per-station Autoencoder (72→16→72) prototype evaluating multivariate reconstruction error against adaptive threshold.
+              </p>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; font-family: var(--font-mono); font-size: 12px;">
+                <div style="background: var(--bg-canvas); padding: 10px; border-radius: 6px;">
+                  <span style="color: var(--text-muted); font-size: 9px; display:block;">RECON ERROR (MSE)</span>
+                  <div id="liveReconError" style="font-size: 17px; color: var(--color-fault); font-weight: 700;">0.087</div>
+                </div>
+                <div style="background: var(--bg-canvas); padding: 10px; border-radius: 6px;">
+                  <span style="color: var(--text-muted); font-size: 9px; display:block;">ADAPTIVE THRESHOLD</span>
+                  <div id="liveThreshold" style="font-size: 17px; color: var(--accent-yellow); font-weight: 700;">0.052</div>
+                </div>
+                <div style="background: var(--bg-canvas); padding: 10px; border-radius: 6px;">
+                  <span style="color: var(--text-muted); font-size: 9px; display:block;">ANOMALY SCORE</span>
+                  <div id="liveAnomalyScore" style="font-size: 17px; color: #F59E0B; font-weight: 700;">0.91</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="spatial-card">
+              <h3 style="font-size: 15px; margin-bottom: 12px;">Physics & Quality Rule Verification</h3>
+              <ul id="livePhysicsRules" style="list-style: none; font-size: 12px; color: var(--text-secondary);">
+                <!-- Populated dynamically -->
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==========================================================================
+             VIEW 3: ANOMALIES TABLE
+             ========================================================================== -->
+        <div id="view-anomalies" class="view-panel">
+          <div class="section-header">
+            <div class="section-title">
+              <h2>Detected Sensor Anomalies</h2>
+              <div class="section-subtitle">Comprehensive ledger of flagged sensor faults, weather disturbances, and suspicious readings</div>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Station ID</th>
+                  <th>Station Name</th>
+                  <th>Status</th>
+                  <th>Confidence</th>
+                  <th>Severity</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="anomaliesTableBody">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ==========================================================================
+             VIEW 4: AWS NETWORK MAP
+             ========================================================================== -->
+        <div id="view-map" class="view-panel">
+          <div class="section-header">
+            <div class="section-title">
+              <h2>Interactive AWS Network Map</h2>
+              <div class="section-subtitle">Spatial deployment across Indian geographic regions</div>
+            </div>
+          </div>
+
+          <div class="map-view-container">
+            <div class="map-toolbar">
+              <div class="map-filter-group">
+                <div class="filter-chip active" data-status="All">All Stations <span class="chip-count" id="mapChipAll">(12)</span></div>
+                <div class="filter-chip" data-status="Faults"><span class="filter-dot" style="background: var(--color-fault);"></span> Faults <span class="chip-count" id="mapChipFaults">(3)</span></div>
+                <div class="filter-chip" data-status="Weather Events"><span class="filter-dot" style="background: var(--color-weather);"></span> Weather Events <span class="chip-count" id="mapChipWeather">(1)</span></div>
+                <div class="filter-chip" data-status="Suspicious"><span class="filter-dot" style="background: var(--color-suspicious);"></span> Under Obs <span class="chip-count" id="mapChipSuspicious">(4)</span></div>
+                <div class="filter-chip" data-status="Offline"><span class="filter-dot" style="background: var(--color-offline);"></span> Offline <span class="chip-count" id="mapChipOffline">(1)</span></div>
+                <div class="filter-chip" data-status="Healthy"><span class="filter-dot" style="background: var(--color-normal);"></span> Healthy <span class="chip-count" id="mapChipHealthy">(3)</span></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <span style="font-size: 11px; color: var(--text-muted);">Click station marker to inspect diagnostics</span>
+                <div class="map-controls-group" style="display:flex;gap:4px;">
+                  <button class="btn-action-sm" id="mapZoomInBtn" title="Zoom In" style="padding:2px 8px;font-weight:700;font-size:13px;line-height:1.2;">+</button>
+                  <button class="btn-action-sm" id="mapZoomOutBtn" title="Zoom Out" style="padding:2px 8px;font-weight:700;font-size:13px;line-height:1.2;">−</button>
+                  <button class="btn-action-sm" id="mapResetViewBtn" title="Reset View" style="padding:2px 8px;font-size:11px;">⟲ Reset</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="map-viewport">
+              <canvas id="stationMapCanvas" class="map-canvas-layer"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==========================================================================
+             VIEW 5: FULL STATIONS DIRECTORY
+             ========================================================================== -->
+        <div id="view-stations" class="view-panel">
+          <div class="section-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+            <div class="section-title">
+              <h2>AWS Station Directory</h2>
+              <div class="section-subtitle">Complete prototype roster — <strong id="stationTableCount">12</strong> monitoring nodes</div>
+            </div>
+            <input type="text" id="stationSearchInput" class="search-input" placeholder="Search by station ID or name…" style="width:260px;" />
+          </div>
+
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Station ID</th>
+                  <th>Location</th>
+                  <th>Temperature</th>
+                  <th>Humidity</th>
+                  <th>Pressure</th>
+                  <th>Wind</th>
+                  <th>Health</th>
+                  <th>Anomaly Score</th>
+                  <th>Status</th>
+                  <th>Severity</th>
+                  <th>Last Updated</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="stationsTableBody">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ==========================================================================
+             VIEW 5B: SENSORS DIRECTORY & PLACE EXPLORER
+             ========================================================================== -->
+        <div id="view-sensors" class="view-panel">
+          <div class="section-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+            <div class="section-title">
+              <h2>Sensors Directory & Place Explorer</h2>
+              <div class="section-subtitle">Multivariate hardware telemetry & Explainable AI (XAI) diagnostics — <strong id="sensorDirectoryCount">60</strong> active channels</div>
+            </div>
+          </div>
+
+          <!-- FILTERS TOOLBAR -->
+          <div style="background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 8px; padding: 16px; margin-bottom: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px;">
+            <div>
+              <label style="font-size: 11px; color: var(--text-secondary); display: block; margin-bottom: 4px; font-weight: 600;">FIND BY PLACE / CITY</label>
+              <select id="sensorPlaceSelect" class="search-input" style="width: 100%;">
+                <option value="ALL">📍 All Places / Stations</option>
+                <option value="Bengaluru">Bengaluru</option>
+                <option value="Bhubaneswar">Bhubaneswar</option>
+                <option value="Chennai">Chennai</option>
+                <option value="Hyderabad">Hyderabad</option>
+                <option value="Jaipur">Jaipur</option>
+                <option value="Jaisalmer">Jaisalmer</option>
+                <option value="Kolkata">Kolkata</option>
+                <option value="Mumbai">Mumbai</option>
+                <option value="New Delhi">New Delhi</option>
+                <option value="Pune">Pune</option>
+                <option value="Shimla">Shimla</option>
+                <option value="Srinagar">Srinagar</option>
+              </select>
+            </div>
+
+            <div>
+              <label style="font-size: 11px; color: var(--text-secondary); display: block; margin-bottom: 4px; font-weight: 600;">SENSOR CHANNEL TYPE</label>
+              <select id="sensorTypeSelect" class="search-input" style="width: 100%;">
+                <option value="ALL">📡 All Sensor Types</option>
+                <option value="Temperature">🌡 Temperature Probe (PT100 RTD)</option>
+                <option value="Humidity">💧 Relative Humidity Transducer</option>
+                <option value="Pressure">📊 Barometric Pressure Transducer</option>
+                <option value="Wind">💨 Ultrasonic Anemometer</option>
+                <option value="Rain">🌧 Tipping Bucket Rain Gauge</option>
+              </select>
+            </div>
+
+            <div>
+              <label style="font-size: 11px; color: var(--text-secondary); display: block; margin-bottom: 4px; font-weight: 600;">HARDWARE STATUS</label>
+              <select id="sensorStatusSelect" class="search-input" style="width: 100%;">
+                <option value="ALL">⚡ All Statuses</option>
+                <option value="Fault">🔴 Fault / Anomaly</option>
+                <option value="Warning">🟡 Warning / Suspicious</option>
+                <option value="Normal">🟢 Normal / Healthy</option>
+              </select>
+            </div>
+
+            <div>
+              <label style="font-size: 11px; color: var(--text-secondary); display: block; margin-bottom: 4px; font-weight: 600;">SEARCH SERIAL # OR STATION</label>
+              <input type="text" id="sensorSearchInput" class="search-input" placeholder="Search serial #, station ID..." style="width: 100%;" />
+            </div>
+          </div>
+
+          <!-- SENSORS DIRECTORY TABLE -->
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Sensor Serial & Model</th>
+                  <th>Station ID & Location</th>
+                  <th>Channel</th>
+                  <th>Observed Reading</th>
+                  <th>Expected Range</th>
+                  <th>Status</th>
+                  <th>MSE Error</th>
+                  <th>XAI Hardware Explanation</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="sensorsTableBody">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ==========================================================================
+             VIEW 6: ANALYTICS
+             ========================================================================== -->
+        <div id="view-analytics" class="view-panel">
+          <div class="section-header">
+            <div class="section-title">
+              <h2>System Analytics</h2>
+              <div class="section-subtitle">Operational metrics and historical anomaly distributions</div>
+            </div>
+          </div>
+
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-title">TOTAL READINGS PROCESSED</div>
+              <div class="kpi-value" id="analyticsReadings">264</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-title">AVG DETECTION LATENCY</div>
+              <div class="kpi-value" id="analyticsLatency">12.4 ms</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-title">STATION AVAILABILITY</div>
+              <div class="kpi-value" id="analyticsAvailability" style="color: var(--color-normal);">91.7%</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-title">SENSOR FAULT RATE</div>
+              <div class="kpi-value" id="analyticsFaultRate" style="color: var(--color-fault);">25.0%</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-title">ANOMALIES FLAGGED (TOTAL)</div>
+              <div class="kpi-value" id="analyticsAnomalies">9</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-title">WEATHER EVENTS CONFIRMED</div>
+              <div class="kpi-value" id="analyticsWeather" style="color: var(--color-weather);">1</div>
+            </div>
+          </div>
+
+          <!-- Status distribution bar chart -->
+          <div class="monitoring-card" style="margin-top: 24px;">
+            <h3 style="font-size: 15px; margin-bottom: 16px;">Station Status Distribution</h3>
+            <div id="analyticsStatusBars" style="display:flex;gap:14px;align-items:flex-end;height:120px;padding-bottom:28px;position:relative;">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+
+          <div class="proto-disclaimer" style="margin-top: 20px;">
+            <span><strong>Prototype / Demo Metric:</strong> Metrics derived from the live station dataset (NOAA ISD proxy).</span>
+          </div>
+        </div>
+
+        <!-- ==========================================================================
+             VIEW 7: STATION HEALTH
+             ========================================================================== -->
+        <div id="view-health" class="view-panel">
+          <div class="section-header">
+            <div class="section-title">
+              <h2>Station Health & Predictive Maintenance</h2>
+              <div class="section-subtitle">Health scoring factor breakdown and hardware maintenance forecasts</div>
+            </div>
+          </div>
+
+          <div class="proto-disclaimer" style="margin-bottom: 20px;">
+            <span><strong>Prototype health prediction:</strong> Health scores derived from multi-factor diagnostic algorithm.</span>
+          </div>
+
+          <div class="health-grid" id="stationHealthGrid">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <!-- ==========================================================================
+             VIEW 8: TECHNICIAN ACTIONS
+             ========================================================================== -->
+        <div id="view-actions" class="view-panel">
+          <div class="section-header">
+            <div class="section-title">
+              <h2>Technician Maintenance Queue</h2>
+              <div class="section-subtitle">Active dispatches and inspection action checklists</div>
+            </div>
+          </div>
+
+          <div id="technicianActionList">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <!-- ==========================================================================
+             VIEW 9: SETTINGS & CUSTOM FAULT SIMULATOR
+             ========================================================================== -->
+        <div id="view-settings" class="view-panel">
+          <div class="section-header">
+            <div class="section-title">
+              <h2>Control Room Settings & Synthetic Fault Generator</h2>
+              <div class="section-subtitle">System parameters and manual simulation controls</div>
+            </div>
+          </div>
+
+          <div class="spatial-card" style="max-width: 650px; margin-bottom: 24px;">
+            <h3 style="font-size: 15px; color: var(--accent-yellow); margin-bottom: 16px;">DEMO / SYNTHETIC FAULT INJECTION CONTROLS</h3>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+              <div>
+                <label style="font-size: 12px; color: var(--text-secondary); display: block; margin-bottom: 6px;">Target Station</label>
+                <select id="simStationSelect" class="search-input" style="width: 100%;">
+                  <option value="MG-006">MG-006 (Bengaluru Central AWS)</option>
+                  <option value="MG-011">MG-011 (Hyderabad Begumpet AWS)</option>
+                  <option value="MG-010">MG-010 (Bhubaneswar Coastal AWS)</option>
+                  <option value="MG-008">MG-008 (Jaipur Sanganer AWS)</option>
+                  <option value="MG-007">MG-007 (Pune Shivajinagar AWS)</option>
+                  <option value="MG-004">MG-004 (Kolkata Alipore AWS)</option>
+                  <option value="MG-003">MG-003 (Jaisalmer Desert AWS)</option>
+                  <option value="MG-005">MG-005 (Shimla Mall Road AWS)</option>
+                  <option value="MG-009">MG-009 (Srinagar Airfield AWS)</option>
+                  <option value="MG-001">MG-001 (New Delhi Safdarjung AWS)</option>
+                  <option value="MG-002">MG-002 (Mumbai Colaba AWS)</option>
+                  <option value="MG-012">MG-012 (Chennai Meenambakkam AWS)</option>
+                </select>
+              </div>
+
+              <div>
+                <label style="font-size: 12px; color: var(--text-secondary); display: block; margin-bottom: 6px;">Target Sensor</label>
+                <select id="simSensorSelect" class="search-input" style="width: 100%;">
+                  <option value="Temperature">Temperature Probe</option>
+                  <option value="Humidity">Humidity Sensor</option>
+                  <option value="Pressure">Barometer Transducer</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+              <label style="font-size: 12px; color: var(--text-secondary); display: block; margin-bottom: 6px;">Synthetic Fault Type</label>
+              <select id="simFaultSelect" class="search-input" style="width: 100%;">
+                <option value="SPIKE">SPIKE (Abrupt Temperature Surging)</option>
+                <option value="DRIFT">DRIFT (Progressive Bias Divergence)</option>
+                <option value="FLATLINE">FLATLINE (Frozen Telemetry Output)</option>
+                <option value="DROPOUT">DROPOUT (Null Telemetry Loss)</option>
+              </select>
+            </div>
+
+            <button class="btn-control btn-yellow" id="customInjectBtn" style="width: 100%;">APPLY SYNTHETIC FAULT</button>
+          </div>
+        </div>
+
+        <!-- ==========================================================================
+             VIEW 10: MODEL INFORMATION
+             ========================================================================== -->
+        <div id="view-model" class="view-panel">
+          <div class="section-header">
+            <div class="section-title">
+              <h2>Model Information & Architecture</h2>
+              <div class="section-subtitle">Transparent technical documentation of MeteoGuard inference engine</div>
+            </div>
+          </div>
+
+          <div class="spatial-card" style="margin-bottom: 20px;">
+            <h3 style="font-size: 16px; color: var(--accent-yellow); margin-bottom: 12px;">AI Model Specification</h3>
+            <p style="font-size: 13px; color: var(--text-primary); line-height: 1.6;">
+              <strong>Architecture:</strong> Per-station Autoencoder (72 → 16 → 72)<br/>
+              <strong>Input Window:</strong> 72-hour multivariate time series (Temperature, Humidity, Pressure)<br/>
+              <strong>Reconstruction Error:</strong> Mean Squared Error (MSE) computed against station latent manifold<br/>
+              <strong>Adaptive Threshold:</strong> Rolling baseline + 1.5× standard deviation
+            </p>
+          </div>
+
+          <div class="spatial-card" style="margin-bottom: 20px;">
+            <h3 style="font-size: 16px; color: var(--accent-yellow); margin-bottom: 12px;">Physics Threshold Matrix</h3>
+            <ul style="list-style: none; font-size: 13px; color: var(--text-primary); line-height: 1.8;">
+              <li>• <strong>Temperature:</strong> Rate of change ≤ 5.0°C / hour | Physical bounds: -10°C to +55°C</li>
+              <li>• <strong>Pressure:</strong> Rate of change ≤ 3.0 hPa / hour | Physical bounds: 870 hPa to 1080 hPa</li>
+              <li>• <strong>Humidity:</strong> Rate of change ≤ 15.0% / hour | Physical bounds: 0% to 100%</li>
+            </ul>
+          </div>
+
+          <div class="spatial-card">
+            <h3 style="font-size: 16px; color: var(--accent-yellow); margin-bottom: 12px;">Data Source & Operational Integration Note</h3>
+            <div class="proto-disclaimer">
+              <span>NOAA ISD is used as a proxy dataset for this prototype. Official IMD integration would be required for operational deployment.</span>
+            </div>
+            <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.6; margin-top: 10px;">
+              Deploying MeteoGuard in operational meteorological centres requires connecting directly to IMD AWS REST telemetry endpoints. Synthetic fault injection was utilized during prototype evaluation due to lack of publicly labelled Indian AWS fault datasets.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       STATION DETAIL MODAL
+       ========================================================================== -->
+  <div class="modal-overlay" id="stationModalOverlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalStationTitle" style="font-size: 16px; color: var(--text-primary);">Station Details</h3>
+        <button class="modal-close" id="modalCloseBtn">&times;</button>
+      </div>
+      <div class="modal-body" id="modalStationBody">
+        <!-- Content injected dynamically by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/embedded_data.js"></script>
+  <script src="js/data_layer.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
